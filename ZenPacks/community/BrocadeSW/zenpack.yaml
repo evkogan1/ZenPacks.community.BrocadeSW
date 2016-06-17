@@ -1,0 +1,480 @@
+name: ZenPacks.community.BrocadeSW
+
+classes:
+  BrocadeSW:
+    base: [zenpacklib.Device]
+    label: BrocadeSW
+    properties:
+      firmwareversion:
+        type: string
+        label: FirmwareVersion
+      threshold_cpu:
+        type: int
+        default: 75
+      threshold_mem:
+        type: int
+        default: 70
+
+  BrocadeSWSensorTemperature:
+    base: [zenpacklib.Component]
+    label: Temperature
+    properties:
+      statusdate:
+        label: Status Date
+        content_width: 100
+      status:
+        label: Status
+
+  BrocadeSWSensorFan:
+    base: [zenpacklib.Component]
+    label: Fan
+    properties:
+      statusdate:
+        label: Status Date
+        content_width: 100
+      status:
+        label: Status
+
+  BrocadeSWSensorPower:
+    base: [zenpacklib.Component]
+    label: Power Supply
+    properties:
+      statusdate:
+        label: Status Date
+        content_width: 100
+      status:
+        label: Status
+
+  BrocadeSWFCPort:
+    base: [zenpacklib.Component]
+    label: FC Port
+    properties:
+      PortNumber:
+        label: '#'
+        label_width: 15
+        type: int
+        order: 1
+      PortName:
+        label: Port Name
+        label_width: 150
+        order: 2
+      PhyState:
+        label: phystate
+        label_width: 50
+        order: 3
+      status:
+        label: OpStatus
+        label_width: 50
+        order: 4
+        renderer: Zenoss.render.FCPort_OpStatus
+      LinkState:
+        label: LinkState
+        label_width: 50
+        order: 5
+      statusdate:
+        label: Status Date
+        content_width: 100
+        order: 6
+      Speed:
+        label: Speed
+        label_width: 30
+        type: int
+        order: 7
+        #enum: [ 1, '1GB', '2Gb', 'auto-Negotiate', '4Gb', '8Gb', '10Gb', 'unknown', '16Gb'  ]
+        renderer: Zenoss.render.FCPort_Speed
+      PortType:
+        label: Port Type
+        grid_display: false
+      TxType:
+        label: TxType
+        grid_display: false
+      LocalWWN:
+        label: LocalWWN
+        grid_display: false
+      RemotePortWWPN:
+        label: RemotePortWWPN
+        grid_display: false
+      RemotePortSymb:
+        label: RemotePortSymb
+        grid_display: false
+      RemotePortWWNN:
+        label: RemotePortWWNN
+        grid_display: false
+      RemoteNodeSymb:
+        label: RemoteNodeSymb
+        grid_display: false
+
+
+class_relationships:
+  - BrocadeSW 1:MC BrocadeSWSensorTemperature
+  - BrocadeSW 1:MC BrocadeSWSensorFan
+  - BrocadeSW 1:MC BrocadeSWSensorPower
+  - BrocadeSW 1:MC BrocadeSWFCPort
+
+device_classes:
+  /BrocadeSW:
+    zProperties:
+      zPythonClass : ZenPacks.community.BrocadeSW.BrocadeSW
+      zSnmpMonitorIgnore: false
+      zCollectorPlugins:
+        - zenoss.snmp.NewDeviceMap
+        - zenoss.snmp.DeviceMap
+        - community.snmp.BrocadeSW
+        - community.snmp.BrocadeSWSensor
+        - community.snmp.BrocadeSWFCPort
+      zDeviceTemplates:
+        - Device
+        - BrocadeSWCPU
+        - BrocadeSW
+
+    templates:
+      Temperature:
+        description: Switch Brocade Temperature monitoring.
+        targetPythonClass: ZenPacks.community.BrocadeSW.BrocadeSWSensorTemperature
+
+        thresholds:
+          Critical temperature:
+            dsnames: [Temperature_Temperature]
+            eventClass: /Environ
+            maxval: '60'
+            minval: '10'
+          StatusChange:
+            dsnames: [Status_Status]
+            eventClass: /Status/Brocade/sensor
+            type: ValueChangeThreshold
+            severity: 3
+        datasources:
+          Temperature:
+            type: SNMP
+            datapoints:
+              Temperature: GAUGE_MIN_0_MAX_100
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.1.22.1.4
+          Status:
+            type: SNMP
+            datapoints:
+              Status:
+                description: Switch Brocade Status monitoring.
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.1.22.1.3
+        graphs:
+          Temperature:
+            height: 100
+            width: 500
+            units: degrees c.
+            graphpoints:
+              Temperature:
+                dpName: Temperature_Temperature
+                format: '%7.2lf'
+                includeThresholds: true
+
+      Fan:
+        description: Switch Brocade Fan monitoring.
+        targetPythonClass: ZenPacks.community.BrocadeSW.BrocadeSWSensorFan
+
+        thresholds:
+          Low RPM:
+            dsnames: [Fans_RPMs]
+            eventClass: /Status/Brocade/sensor
+            minval: '1000'
+          StatusChange:
+            dsnames: [Status_Status]
+            eventClass: /Status/Brocade/sensor
+            type: ValueChangeThreshold
+            severity: 4
+        datasources:
+          Fans:
+            type: SNMP
+            datapoints:
+              RPMs: GAUGE_MIN_0_MAX_20000
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.1.22.1.4
+          Status:
+            type: SNMP
+            datapoints:
+              Status:
+                description: Switch Brocade Status monitoring.
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.1.22.1.3
+        graphs:
+          Fans:
+            height: 200
+            width: 500
+            units: RPM.
+            graphpoints:
+              RPMs:
+                dpName: Fans_RPMs
+                format: '%7.2lf'
+                includeThresholds: true
+
+      PowerSupply:
+        description: Switch Brocade power supply  monitoring.
+        targetPythonClass: ZenPacks.community.BrocadeSW.BrocadeSWSensorFan
+
+        thresholds:
+          StatusChange:
+            dsnames: [Status_Status]
+            eventClass: /Status/Brocade/sensor
+            type: ValueChangeThreshold
+            severity: 4
+        datasources:
+          Status:
+            type: SNMP
+            datapoints:
+              Status:
+                description: Switch Brocade Status monitoring.
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.1.22.1.3
+
+      FCPort:
+        description: Switch Brocade FC port perfomance  monitoring.
+        targetPythonClass: ZenPacks.community.BrocadeSW.BrocadeSWFCPort
+
+        thresholds:
+          OpStatusChange:
+            dsnames: [OpStatus_OpStatus]
+            eventClass: /Status/Brocade/Port
+            type: ValueChangeThreshold
+            severity: 4
+          LinkStatusChange:
+            dsnames: [LinkStatus_LinkStatus]
+            eventClass: /Status/Brocade/Port
+            type: ValueChangeThreshold
+            severity: 2
+          High Utilization:
+            dsnames: [PortRxWords_PortRxWords, PortTxWords_PortTxWords]
+            eventClass: /Perf/Interface
+            maxval: ((int(here.Speed)*1073741824 or 2e9)/32)*0.75
+          Errors:
+            dsnames: [PortErrRxEncInFrames_PortErrRxEncInFrames, PortErrRxCrcFrames_PortErrRxCrcFrames, PortErrRxTruncFrames_PortErrRxTruncFrames, PortErrRxLongFrames_PortErrRxLongFrames, PortErrRxBadEofFrames_PortErrRxBadEofFrames, PortErrRxEncOutFrames_PortErrRxEncOutFrames, PortErrRxBadOrderFrames_PortErrRxBadOrderFrames]
+            eventClass: /Perf/Interface
+            maxval: 10
+        datasources:
+          OpStatus:
+            type: SNMP
+            datapoints:
+              OpStatus: GAUGE_MIN_0_MAX_10
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.6.2.1.4
+          LinkStatus:
+            type: SNMP
+            datapoints:
+              LinkStatus: GAUGE_MIN_0_MAX_10
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.6.2.1.6
+          PortTxWords:
+            type: SNMP
+            datapoints:
+              PortTxWords:
+                rrdtype: COUNTER
+                rrdmin: 0
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.6.2.1.11
+          PortRxWords:
+            type: SNMP
+            datapoints:
+              PortRxWords:
+                rrdtype: COUNTER
+                rrdmin: 0
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.6.2.1.12
+          PortTxFrames:
+            type: SNMP
+            datapoints:
+              PortTxFrames:
+                rrdtype: COUNTER
+                rrdmin: 0
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.6.2.1.13
+          PortRxFrames:
+            type: SNMP
+            datapoints:
+              PortRxFrames:
+                rrdtype: COUNTER
+                rrdmin: 0
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.6.2.1.14
+          PortErrRxEncInFrames:
+            type: SNMP
+            datapoints:
+              PortErrRxEncInFrames:
+                rrdtype: COUNTER
+                rrdmin: 0
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.6.2.1.21
+          PortErrRxCrcFrames:
+            type: SNMP
+            datapoints:
+              PortErrRxCrcFrames:
+                rrdtype: COUNTER
+                rrdmin: 0
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.6.2.1.22
+          PortErrRxTruncFrames:
+            type: SNMP
+            datapoints:
+              PortErrRxTruncFrames:
+                rrdtype: COUNTER
+                rrdmin: 0
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.6.2.1.23
+          PortErrRxLongFrames:
+            type: SNMP
+            datapoints:
+              PortErrRxLongFrames:
+                rrdtype: COUNTER
+                rrdmin: 0
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.6.2.1.24
+          PortErrRxBadEofFrames:
+            type: SNMP
+            datapoints:
+              PortErrRxBadEofFrames:
+                rrdtype: COUNTER
+                rrdmin: 0
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.6.2.1.25
+          PortErrRxEncOutFrames:
+            type: SNMP
+            datapoints:
+              PortErrRxEncOutFrames:
+                rrdtype: COUNTER
+                rrdmin: 0
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.6.2.1.26
+          PortErrRxBadOrderFrames:
+            type: SNMP
+            datapoints:
+              PortErrRxBadOrderFrames:
+                rrdtype: COUNTER
+                rrdmin: 0
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.6.2.1.27
+        graphs:
+          Speed:
+            height: 100
+            width: 500
+            units: bits/sec.
+            graphpoints:
+              PortTxBits:
+                dpName: PortTxWords_PortTxWords
+                format: '%5.2lf%s'
+                rpn: 32,*
+                color: 6161FA
+                includeThresholds: true
+              PortRxBits:
+                dpName: PortRxWords_PortRxWords
+                format: '%5.2lf%s'
+                lineType: AREA
+                rpn: 32,*
+                color: 00cc00
+                includeThresholds: true
+          Error:
+            height: 100
+            width: 500
+            units: Errs/sec.
+            graphpoints:
+              PortErrRxEncInFrames:
+                dpName: PortErrRxEncInFrames_PortErrRxEncInFrames
+                format: '%7.2lf'
+                includeThresholds: true
+              PortErrRxCrcFrames:
+                dpName: PortErrRxCrcFrames_PortErrRxCrcFrames
+                format: '%7.2lf'
+                includeThresholds: true
+              PortErrRxTruncFrames:
+                dpName: PortErrRxTruncFrames_PortErrRxTruncFrames
+                format: '%7.2lf'
+                includeThresholds: true
+              PortErrRxLongFrames:
+                dpName: PortErrRxLongFrames_PortErrRxLongFrames
+                format: '%7.2lf'
+                includeThresholds: true
+              PortErrRxBadEofFrames:
+                dpName: PortErrRxBadEofFrames_PortErrRxBadEofFrames
+                format: '%7.2lf'
+                includeThresholds: true
+              PortErrRxEncOutFrames:
+                dpName: PortErrRxEncOutFrames_PortErrRxEncOutFrames
+                format: '%7.2lf'
+                includeThresholds: true
+              PortErrRxBadOrderFrames:
+                dpName: PortErrRxBadOrderFrames_PortErrRxBadOrderFrames
+                format: '%7.2lf'
+                includeThresholds: true
+          FrameTransmeted:
+            height: 100
+            width: 500
+            units: frame/sec.
+            graphpoints:
+              PortTxFrames:
+                dpName: PortTxFrames_PortTxFrames
+                format: '%5.2lf%s'
+                color: 6161FA
+                includeThresholds: true
+              PortRxFrames:
+                dpName: PortRxFrames_PortRxFrames
+                format: '%5.2lf%s'
+                lineType: AREA
+                color: 00cc00
+                includeThresholds: true
+          WordsTransmeted:
+            height: 100
+            width: 500
+            units: words/sec.
+            graphpoints:
+              PortTxWords:
+                dpName: PortTxWords_PortTxWords
+                format: '%5.2lf%s'
+                color: 6161FA
+                includeThresholds: true
+              PortRxWords:
+                dpName: PortRxWords_PortRxWords
+                format: '%5.2lf%s'
+                lineType: AREA
+                color: 00cc00
+                includeThresholds: true
+
+      BrocadeSWCPU:
+        description: ''
+        targetPythonClass: ZenPacks.community.BrocadeSW.BrocadeSW
+        thresholds:
+          CPUUsageLimit:
+            dsnames: [CPU_CPU]
+            maxval: here.threshold_cpu #75
+          MemUsageLimit:
+            dsnames: [Mem_Mem]
+            maxval: here.threshold_mem #70
+        datasources:
+          CPU:
+            type: SNMP
+            datapoints:
+              CPU: GAUGE_MIN_0_MAX_100
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.26.1.0
+          Mem:
+            type: SNMP
+            datapoints:
+              Mem: GAUGE_MIN_0_MAX_100
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.26.6.0
+        graphs:
+          CPU:
+            units: percent, %
+            graphpoints:
+              CPU:
+                dpName: CPU_CPU
+                includeThresholds: true
+          Memory:
+            units: percent, %
+            graphpoints:
+              Mem:
+                dpName: Mem_Mem
+                includeThresholds: true
+
+      BrocadeSW:
+        description: Switch Brocade status monitoring.
+        targetPythonClass: ZenPacks.community.BrocadeSW.BrocadeSW
+
+        thresholds:
+          OpStatusChange:
+            dsnames: [OpStatus_OpStatus]
+            eventClass: /Status/Brocade/SwitchStatus
+            type: ValueChangeThreshold
+            severity: 5
+          DiagResult:
+            dsnames: [DiagResult_DiagResult]
+            eventClass: /Status/Brocade/SwitchStatus
+            type: ValueChangeThreshold
+            severity: 5
+        datasources:
+          OpStatus:
+            type: SNMP
+            datapoints:
+              OpStatus: GAUGE_MIN_0_MAX_10
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.1.7.0
+          DiagResult:
+            type: SNMP
+            datapoints:
+              DiagResult: GAUGE_MIN_0_MAX_10
+            oid: 1.3.6.1.4.1.1588.2.1.1.1.1.20.0
