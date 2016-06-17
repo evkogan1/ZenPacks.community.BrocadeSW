@@ -1,7 +1,8 @@
 # ZenPacks.community.BrocadeSW
 
 #Description
-The ZenPacks.community.BrocadeSW ZenPack monitors Brocade Storage Sswitches.
+The ZenPacks.community.BrocadeSW ZenPack monitors Brocade Storage Switches.
+
 Tested on next models:
 
 1.SN6000B 16Gb 48-port/24-port Active Power Pack+ Fibre Channel Switch
@@ -14,28 +15,38 @@ Tested on next models:
 
 5.HP StorageWorks SAN Switch 2/8V
 
-
 and next firmware:
+
 -v7.2.1d
+
 -v7.0.2a
+
 -v5.3.2c
+
 -v5.3.2b
 
+
 #Features
-*Overview:
+
+Overview:
+
     -Firmware Version
     -Seial Number
     -Device Title
-*Graphs:
+Graphs:
+
     -CPU (if supported)
     -Memory (if supported)
-*Components:
+
+Components:
+
     -Sensors:
         -Temperature
         -Fan
         -Power Supply
     -FC Port
-*Events:
+Events:
+
     -Status change of device and all components
     -Perfomance threshold
         -Max usage
