@@ -3,11 +3,17 @@
 #Description
 The ZenPacks.community.BrocadeSW ZenPack monitors Brocade Storage Sswitches.
 Tested on next models:
--SN6000B 16Gb 48-port/24-port Active Power Pack+ Fibre Channel Switch
--HP 8/8 Base (0) e-port SAN Switch
--HP 8/40 SAN Switch Power Pack+
--HP StorageWorks 4/16 SAN Switch
--HP StorageWorks SAN Switch 2/8V
+
+1.SN6000B 16Gb 48-port/24-port Active Power Pack+ Fibre Channel Switch
+
+2.HP 8/8 Base (0) e-port SAN Switch
+
+3.HP 8/40 SAN Switch Power Pack+
+
+4.HP StorageWorks 4/16 SAN Switch
+
+5.HP StorageWorks SAN Switch 2/8V
+
 
 and next firmware:
 -v7.2.1d
