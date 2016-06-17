@@ -3,17 +3,17 @@
 #Description
 The ZenPacks.community.BrocadeSW ZenPack monitors Brocade Storage Sswitches.
 Tested on next models:
-SN6000B 16Gb 48-port/24-port Active Power Pack+ Fibre Channel Switch
-HP 8/8 Base (0) e-port SAN Switch
-HP 8/40 SAN Switch Power Pack+
-HP StorageWorks 4/16 SAN Switch
-HP StorageWorks SAN Switch 2/8V
+-SN6000B 16Gb 48-port/24-port Active Power Pack+ Fibre Channel Switch
+-HP 8/8 Base (0) e-port SAN Switch
+-HP 8/40 SAN Switch Power Pack+
+-HP StorageWorks 4/16 SAN Switch
+-HP StorageWorks SAN Switch 2/8V
 
 and next firmware:
-v7.2.1d
-v7.0.2a
-v5.3.2c
-v5.3.2b
+-v7.2.1d
+-v7.0.2a
+-v5.3.2c
+-v5.3.2b
 
 #Features
 *Overview:
@@ -47,7 +47,7 @@ Python libriry binascii
 
 #ZenPack installation
 This ZenPack can be installed from the .egg file using either the GUI or the zenpack command line.
-zenpack --install ZenPacks.community.DirFile
+zenpack --install ZenPacks.community.BrocadeSW
 Restart zenoss after installation.
 
 #TODO
