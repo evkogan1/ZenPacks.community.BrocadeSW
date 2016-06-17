@@ -47,7 +47,7 @@ Components:
     -FC Port
 Events:
 
-    -Status change of device and all components
+    -Status change of device and all components (with auto clear)
     -Perfomance threshold
         -Max usage
         -Errors
