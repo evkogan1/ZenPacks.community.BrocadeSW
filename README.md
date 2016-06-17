@@ -44,7 +44,7 @@ Components:
         -Temperature
         -Fan
         -Power Supply
-    -FC Port
+    -FC Port (many port propertys see screenshot Copmonents_FCPorts2.png)
 Events:
 
     -Status change of device and all components (with auto clear)
