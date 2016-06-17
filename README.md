@@ -16,24 +16,24 @@ v5.3.2c
 v5.3.2b
 
 #Features
-Overview:
-    Firmware Version
-    Seial Number
-    Device Title
-Graphs:
-    CPU (if supported)
-    Memory (if supported)
-Components:
-    Sensors:
-<------>Temperature
-<------>Fan
-<------>Power Supply
-    FC Port
-Events:
-    Status change of device and all components
-    Perfomance threshold
-<------>Max usage
-<------>Errors
+*Overview:
+    -Firmware Version
+    -Seial Number
+    -Device Title
+*Graphs:
+    -CPU (if supported)
+    -Memory (if supported)
+*Components:
+    -Sensors:
+        -Temperature
+        -Fan
+        -Power Supply
+    -FC Port
+*Events:
+    -Status change of device and all components
+    -Perfomance threshold
+        -Max usage
+        -Errors
 
 # Screenshots
 See the screenshots directory.
